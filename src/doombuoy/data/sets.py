@@ -87,6 +87,27 @@ def binary_classification_model_comparison_summary(df, target_col):
 # summary_df = binary_classification_model_comparison_summary(your_dataframe, 'target_column_name')
 # print(summary_df)
 #####################################################################################################################################################################
+def binary_classification_model_comparison_models():
+    model_map = {
+    "lr": "LogisticRegression",
+    "ridge": "RidgeClassifier",
+    "lda": "LinearDiscriminantAnalysis",
+    "rf": "RandomForestClassifier",
+    "nb": "GaussianNB",
+    "catboost": "CatBoostClassifier",
+    "gbc": "GradientBoostingClassifier",
+    "ada": "AdaBoostClassifier",
+    "et": "ExtraTreesClassifier",
+    "qda": "QuadraticDiscriminantAnalysis",
+    "lightgbm": "LGBMClassifier",
+    "knn": "KNeighborsClassifier",
+    "dt": "DecisionTreeClassifier",
+    "xgboost": "XGBClassifier",
+    "dummy": "DummyClassifier",
+    "svm": "SVC"
+    }
+    print(model_map)
+
 
 
 
@@ -188,6 +209,29 @@ def multiclass_classification_model_comparison_summary(df, target_col):
 # summary_df = multiclass_classification_model_comparison_summary(your_dataframe, 'target_column_name')
 # print(summary_df)
 
+#########################################################################################################################################################
+def multiclass_classification_model_comparison_models():
+    multi_class_model_map = {
+        "lr": "LogisticRegression",
+        "ridge": "RidgeClassifier",
+        "lda": "LinearDiscriminantAnalysis",
+        "rf": "RandomForestClassifier",
+        "nb": "GaussianNB",
+        "catboost": "CatBoostClassifier",
+        "gbc": "GradientBoostingClassifier",
+        "ada": "AdaBoostClassifier",
+        "et": "ExtraTreesClassifier",
+        "qda": "QuadraticDiscriminantAnalysis",
+        "lightgbm": "LGBMClassifier",
+        "knn": "KNeighborsClassifier",
+        "dt": "DecisionTreeClassifier",
+        "xgboost": "XGBClassifier",
+        "dummy": "DummyClassifier",
+        "svm": "SVC"
+        }
+    print(multi_class_model_map)
+
+############################################################################################################################################################################
 import time
 import numpy as np
 import pandas as pd
@@ -282,6 +326,29 @@ def regression_model_comparison_summary(df, target_col):
 # print(summary_df)
 
 
+##############################################################################################################################################################
+def regression_model_comparison_models():
+    regression_model_map = {
+    "Dummy Regressor": "DummyRegressor",
+    "omp": "OrthogonalMatchingPursuit",
+    "en": "ElasticNet",
+    "br": "BayesianRidge",
+    "ridge": "Ridge",
+    "llar": "LassoLars",
+    "lasso": "Lasso",
+    "huber": "HuberRegressor",
+    "lar": "Lars",
+    "gbrt": "GradientBoostingRegressor",
+    "rf": "RandomForestRegressor",
+    "catboost": "CatBoostRegressor",
+    "par": "PassiveAggressiveRegressor",
+    "knn": "KNeighborsRegressor",
+    "lightgbm": "LGBMRegressor",
+    "ada": "AdaBoostRegressor",
+    "dt": "DecisionTreeRegressor",
+    "et": "ExtraTreesRegressor"
+        }
+    print(regression_model_map)
 
 
 

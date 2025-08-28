@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "doombuoy"
+version = "2025.0.0.9"
+description = "will help you decide the best models for prediction"
+authors = ["Agam Singh Saini"]
+license = "Apache License 2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11.4"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

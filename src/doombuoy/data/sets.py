@@ -27,7 +27,7 @@ try:
 except ImportError:
     XGBClassifier = None
 
-def binary_classification_model_comparison_summary(df, target_col):
+def binary_classification_model_comparison_summary(df: pd.DataFrame, target_col: str) -> pd.DataFrame:
     X = df.drop(columns=[target_col])
     y = df[target_col]
     X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=42)
@@ -141,7 +141,7 @@ try:
 except ImportError:
     XGBClassifier = None
 
-def multiclass_classification_model_comparison_summary(df, target_col):
+def multiclass_classification_model_comparison_summary(df: pd.DataFrame, target_col: str) -> pd.DataFrame:
     X = df.drop(columns=[target_col])
     y = df[target_col]
     X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, random_state=42)
@@ -258,7 +258,7 @@ try:
 except ImportError:
     LGBMRegressor = None
 
-def regression_model_comparison_summary(df, target_col):
+def regression_model_comparison_summary(df: pd.DataFrame, target_col: str) -> pd.DataFrame:
     X = df.drop(columns=[target_col])
     y = df[target_col]
     X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
@@ -410,7 +410,7 @@ def smape(y_true, y_pred):
 def mape(y_true, y_pred):
     return 100 * np.mean(np.abs((y_true - y_pred) / (y_true + 1e-8)))
 
-def time_series_forecasting_summary(df, target_col="y", time_col="ds", test_size=0.2):
+def time_series_forecasting_summary(df: pd.DataFrame, target_col: str = "y", time_col: str = "ds", test_size: float = 0.2) -> pd.DataFrame:
     """
     Returns a summary DataFrame of time series forecasting models and metrics.
     Assumes df has columns [time_col, target_col].

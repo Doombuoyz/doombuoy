@@ -1,6 +1,10 @@
 # doombuoy
+Use this command to install 
+pip install --extra-index https://test.pypi.org/simple/ doombuoy
 
-will help you decide the best models for prediction
+This library streamlines model comparison for data science projects.  
+It currently supports binary classification, multiclass classification, regression, and time series tasks.  
+With doombuoy, you can quickly generate performance summaries for a wide range of popular models, helping you select or set a baseline for your modeling efforts.
 
 ## Installation
 

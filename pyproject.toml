@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "doombuoy"
-version = "2025.0.0.17"
+version = "2025.0.0.18"
 description = "will help you decide the best models for prediction"
 authors = ["Agam Singh Saini"]
 license = "Apache License 2.0"

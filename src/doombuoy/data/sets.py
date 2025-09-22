@@ -598,10 +598,9 @@ def time_series_forecasting_summary(df: pd.DataFrame, target_col: str = "y", tim
 # print(summary_df)
 #######################################################################################################################################################################
 
-
 def plot_model_performance(results_df: pd.DataFrame, metric: str = "Accuracy"):
     """
-    Visualize the performance of models using a bar plot.
+    Visualize the performance of models using a bar plot and display values above the bars.
 
     Args:
         results_df (pd.DataFrame): DataFrame containing model performance metrics.
@@ -618,11 +617,20 @@ def plot_model_performance(results_df: pd.DataFrame, metric: str = "Accuracy"):
     fig_width = max(10, num_models * 1.5)  # Minimum width of 10, increase by 1.5 per model
     plt.figure(figsize=(fig_width, 6))
     
-    sns.barplot(data=results_df, x="Model", y=metric, palette="viridis")
+    # Create the bar plot
+    ax = sns.barplot(data=results_df, x="Model", y=metric, palette="viridis")
     plt.title(f"Model Performance Comparison ({metric})", fontsize=14)
     plt.xlabel("Model", fontsize=12)
     plt.ylabel(metric, fontsize=12)
     plt.xticks(rotation=45, fontsize=10)
     plt.yticks(fontsize=10)
+    
+    # Add values above the bars
+    for p in ax.patches:
+        height = p.get_height()
+        ax.annotate(f'{height:.4f}',  # Format the value to 4 decimal places
+                    (p.get_x() + p.get_width() / 2., height),
+                    ha='center', va='bottom', fontsize=10, color='black')
+    
     plt.tight_layout()
     plt.show()

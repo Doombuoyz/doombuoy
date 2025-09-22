@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "doombuoy"
-version = "2025.0.0.19"
+version = "2025.0.0.20"
 description = "will help you decide the best models for prediction"
 authors = ["Agam Singh Saini"]
 license = "Apache License 2.0"
@@ -20,6 +20,7 @@ joblib = "1.4.2"
 hyperopt = "0.2.7"
 lime = "0.2.0.1"
 wandb = "0.17.4"
+seaborn = "^0.13.2"
 
 
 [build-system]

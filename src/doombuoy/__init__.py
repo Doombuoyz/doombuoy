@@ -9,5 +9,6 @@ from .data.sets import (
 	time_series_forecasting_summary,
     binary_classification_model_comparison_models,
     multiclass_classification_model_comparison_models,
-    regression_model_comparison_models
+    regression_model_comparison_models,
+    plot_model_performance
 )

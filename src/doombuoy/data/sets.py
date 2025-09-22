@@ -1,11 +1,14 @@
 import time
 import numpy as np
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     accuracy_score, roc_auc_score, recall_score, precision_score, f1_score,
     cohen_kappa_score, matthews_corrcoef
 )
+
 from sklearn.linear_model import LogisticRegression, RidgeClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, ExtraTreesClassifier
@@ -593,3 +596,33 @@ def time_series_forecasting_summary(df: pd.DataFrame, target_col: str = "y", tim
 # Example usage:
 # summary_df = time_series_forecasting_summary(your_dataframe, target_col="y", time_col="ds")
 # print(summary_df)
+#######################################################################################################################################################################
+
+
+def plot_model_performance(results_df: pd.DataFrame, metric: str = "Accuracy"):
+    """
+    Visualize the performance of models using a bar plot.
+
+    Args:
+        results_df (pd.DataFrame): DataFrame containing model performance metrics.
+        metric (str): The metric to visualize (e.g., "Accuracy", "AUC", "F1 Score").
+
+    Returns:
+        None: Displays the plot.
+    """
+    if metric not in results_df.columns:
+        raise ValueError(f"Metric '{metric}' not found in results DataFrame.")
+    
+    # Adjust figure size based on the number of models
+    num_models = len(results_df["Model"])
+    fig_width = max(10, num_models * 1.5)  # Minimum width of 10, increase by 1.5 per model
+    plt.figure(figsize=(fig_width, 6))
+    
+    sns.barplot(data=results_df, x="Model", y=metric, palette="viridis")
+    plt.title(f"Model Performance Comparison ({metric})", fontsize=14)
+    plt.xlabel("Model", fontsize=12)
+    plt.ylabel(metric, fontsize=12)
+    plt.xticks(rotation=45, fontsize=10)
+    plt.yticks(fontsize=10)
+    plt.tight_layout()
+    plt.show()

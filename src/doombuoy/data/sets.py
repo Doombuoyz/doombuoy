@@ -609,6 +609,7 @@ def plot_model_performance(results_df: pd.DataFrame, metric: str = "Accuracy"):
     Returns:
         None: Displays the plot.
     """
+    results_df=results_df.sort_values(metric, ascending=False)
     if metric not in results_df.columns:
         raise ValueError(f"Metric '{metric}' not found in results DataFrame.")
     

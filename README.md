@@ -67,6 +67,41 @@ summary = time_series_forecasting_summary(df, target_col='y', time_col='ds')
 print(summary)
 ```
 
+### Model Performance Visualization
+
+```python
+from doombuoy import plot_model_performance
+
+# Use results from any model comparison function
+summary = binary_classification_model_comparison_summary(df, target_col='target')
+
+# Visualize model performance for different metrics
+plot_model_performance(summary, metric="Accuracy")
+plot_model_performance(summary, metric="AUC")
+plot_model_performance(summary, metric="F1 Score")
+```
+
+### Data Quality Assessment
+
+```python
+from doombuoy import data_quality_report, data_quality_summary, plot_data_quality_overview, detect_potential_issues
+
+# Generate comprehensive data quality report
+quality_report = data_quality_report(df)
+print(quality_report)
+
+# Get high-level summary
+summary = data_quality_summary(df)
+print(summary)
+
+# Create data quality visualizations
+plot_data_quality_overview(df)
+
+# Detect potential data issues
+issues = detect_potential_issues(df)
+print("Potential Issues Found:", issues)
+```
+
 ## Contributing
 
 Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.

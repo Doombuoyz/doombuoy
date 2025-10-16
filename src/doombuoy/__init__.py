@@ -10,5 +10,9 @@ from .data.sets import (
     binary_classification_model_comparison_models,
     multiclass_classification_model_comparison_models,
     regression_model_comparison_models,
-    plot_model_performance
+    plot_model_performance,
+    data_quality_report,
+    data_quality_summary,
+    plot_data_quality_overview,
+    detect_potential_issues
 )

@@ -635,3 +635,274 @@ def plot_model_performance(results_df: pd.DataFrame, metric: str = "Accuracy"):
     
     plt.tight_layout()
     plt.show()
+
+    
+#######################################################################################################################################################################
+
+def data_quality_report(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Generate a comprehensive data quality report for a DataFrame.
+    
+    Args:
+        df (pd.DataFrame): Input DataFrame to analyze
+        
+    Returns:
+        pd.DataFrame: Data quality report with various metrics
+    """
+    
+    report_data = []
+    
+    for column in df.columns:
+        col_data = df[column]
+        
+        # Basic info
+        total_count = len(col_data)
+        non_null_count = col_data.count()
+        null_count = col_data.isnull().sum()
+        null_percentage = round((null_count / total_count) * 100, 2)
+        
+        # Data type
+        dtype = str(col_data.dtype)
+        
+        # Duplicates
+        duplicate_count = col_data.duplicated().sum()
+        duplicate_percentage = round((duplicate_count / total_count) * 100, 2)
+        
+        # Unique values
+        unique_count = col_data.nunique()
+        unique_percentage = round((unique_count / total_count) * 100, 2)
+        
+        # Memory usage
+        memory_usage = col_data.memory_usage(deep=True)
+        
+        # Initialize statistical metrics
+        mean_val = median_val = std_val = min_val = max_val = q25 = q75 = skewness = kurtosis = None
+        outlier_count = outlier_percentage = 0
+        
+        # Statistical analysis for numeric columns
+        if pd.api.types.is_numeric_dtype(col_data):
+            mean_val = round(col_data.mean(), 4) if not col_data.empty else None
+            median_val = round(col_data.median(), 4) if not col_data.empty else None
+            std_val = round(col_data.std(), 4) if not col_data.empty else None
+            min_val = round(col_data.min(), 4) if not col_data.empty else None
+            max_val = round(col_data.max(), 4) if not col_data.empty else None
+            q25 = round(col_data.quantile(0.25), 4) if not col_data.empty else None
+            q75 = round(col_data.quantile(0.75), 4) if not col_data.empty else None
+            
+            # Skewness and Kurtosis
+            try:
+                skewness = round(col_data.skew(), 4) if not col_data.empty else None
+                kurtosis = round(col_data.kurtosis(), 4) if not col_data.empty else None
+            except:
+                pass
+            
+            # Outlier detection using IQR method
+            if q25 is not None and q75 is not None:
+                iqr = q75 - q25
+                lower_bound = q25 - 1.5 * iqr
+                upper_bound = q75 + 1.5 * iqr
+                outliers = col_data[(col_data < lower_bound) | (col_data > upper_bound)]
+                outlier_count = len(outliers)
+                outlier_percentage = round((outlier_count / total_count) * 100, 2)
+        
+        # Most frequent value for categorical/text columns
+        most_frequent = None
+        most_frequent_count = 0
+        if not col_data.empty:
+            try:
+                mode_series = col_data.mode()
+                if not mode_series.empty:
+                    most_frequent = str(mode_series.iloc[0])
+                    most_frequent_count = (col_data == mode_series.iloc[0]).sum()
+            except:
+                pass
+        
+        # Zero values (for numeric columns)
+        zero_count = zero_percentage = 0
+        if pd.api.types.is_numeric_dtype(col_data):
+            zero_count = (col_data == 0).sum()
+            zero_percentage = round((zero_count / total_count) * 100, 2)
+        
+        # Infinity values (for numeric columns)
+        inf_count = 0
+        if pd.api.types.is_numeric_dtype(col_data):
+            inf_count = np.isinf(col_data).sum()
+        
+        report_data.append({
+            'Column': column,
+            'Data_Type': dtype,
+            'Total_Count': total_count,
+            'Non_Null_Count': non_null_count,
+            'Null_Count': null_count,
+            'Null_Percentage': null_percentage,
+            'Unique_Count': unique_count,
+            'Unique_Percentage': unique_percentage,
+            'Duplicate_Count': duplicate_count,
+            'Duplicate_Percentage': duplicate_percentage,
+            'Mean': mean_val,
+            'Median': median_val,
+            'Std_Dev': std_val,
+            'Min': min_val,
+            'Max': max_val,
+            'Q25': q25,
+            'Q75': q75,
+            'Skewness': skewness,
+            'Kurtosis': kurtosis,
+            'Zero_Count': zero_count,
+            'Zero_Percentage': zero_percentage,
+            'Outlier_Count': outlier_count,
+            'Outlier_Percentage': outlier_percentage,
+            'Inf_Count': inf_count,
+            'Most_Frequent_Value': most_frequent,
+            'Most_Frequent_Count': most_frequent_count,
+            'Memory_Usage_Bytes': memory_usage
+        })
+    
+    return pd.DataFrame(report_data)
+
+def data_quality_summary(df: pd.DataFrame) -> dict:
+    """
+    Generate a high-level data quality summary.
+    
+    Args:
+        df (pd.DataFrame): Input DataFrame to analyze
+        
+    Returns:
+        dict: Summary statistics about the DataFrame
+    """
+    
+    total_cells = df.shape[0] * df.shape[1]
+    total_missing = df.isnull().sum().sum()
+    missing_percentage = round((total_missing / total_cells) * 100, 2)
+    
+    # Data type distribution
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    categorical_cols = df.select_dtypes(include=['object', 'category']).columns.tolist()
+    datetime_cols = df.select_dtypes(include=['datetime64']).columns.tolist()
+    
+    # Memory usage
+    total_memory = df.memory_usage(deep=True).sum()
+    
+    # Duplicate rows
+    duplicate_rows = df.duplicated().sum()
+    duplicate_rows_percentage = round((duplicate_rows / len(df)) * 100, 2)
+    
+    summary = {
+        'Dataset_Shape': f"{df.shape[0]} rows × {df.shape[1]} columns",
+        'Total_Cells': total_cells,
+        'Missing_Values': total_missing,
+        'Missing_Percentage': missing_percentage,
+        'Duplicate_Rows': duplicate_rows,
+        'Duplicate_Rows_Percentage': duplicate_rows_percentage,
+        'Numeric_Columns': len(numeric_cols),
+        'Categorical_Columns': len(categorical_cols),
+        'Datetime_Columns': len(datetime_cols),
+        'Total_Memory_Usage_MB': round(total_memory / (1024 * 1024), 2),
+        'Numeric_Column_Names': numeric_cols,
+        'Categorical_Column_Names': categorical_cols,
+        'Datetime_Column_Names': datetime_cols
+    }
+    
+    return summary
+
+def plot_data_quality_overview(df: pd.DataFrame):
+    """
+    Create visualizations for data quality overview.
+    
+    Args:
+        df (pd.DataFrame): Input DataFrame to visualize
+    """
+    
+    # Set up the plotting area
+    fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+    fig.suptitle('Data Quality Overview', fontsize=16)
+    
+    # 1. Missing values heatmap
+    if df.isnull().sum().sum() > 0:
+        missing_data = df.isnull()
+        sns.heatmap(missing_data, cbar=True, ax=axes[0, 0], cmap='viridis')
+        axes[0, 0].set_title('Missing Values Heatmap')
+        axes[0, 0].set_xlabel('Columns')
+        axes[0, 0].set_ylabel('Rows')
+    else:
+        axes[0, 0].text(0.5, 0.5, 'No Missing Values', ha='center', va='center', transform=axes[0, 0].transAxes)
+        axes[0, 0].set_title('Missing Values Heatmap')
+    
+    # 2. Missing values bar plot
+    missing_counts = df.isnull().sum()
+    missing_counts = missing_counts[missing_counts > 0]
+    if len(missing_counts) > 0:
+        missing_counts.plot(kind='bar', ax=axes[0, 1], color='coral')
+        axes[0, 1].set_title('Missing Values by Column')
+        axes[0, 1].set_ylabel('Missing Count')
+        axes[0, 1].tick_params(axis='x', rotation=45)
+    else:
+        axes[0, 1].text(0.5, 0.5, 'No Missing Values', ha='center', va='center', transform=axes[0, 1].transAxes)
+        axes[0, 1].set_title('Missing Values by Column')
+    
+    # 3. Data types distribution
+    dtype_counts = df.dtypes.value_counts()
+    axes[1, 0].pie(dtype_counts.values, labels=dtype_counts.index, autopct='%1.1f%%')
+    axes[1, 0].set_title('Data Types Distribution')
+    
+    # 4. Unique values distribution
+    unique_counts = df.nunique()
+    axes[1, 1].hist(unique_counts.values, bins=20, color='lightblue', edgecolor='black')
+    axes[1, 1].set_title('Distribution of Unique Values per Column')
+    axes[1, 1].set_xlabel('Number of Unique Values')
+    axes[1, 1].set_ylabel('Number of Columns')
+    
+    plt.tight_layout()
+    plt.show()
+
+# Example usage functions
+def detect_potential_issues(df: pd.DataFrame) -> dict:
+    """
+    Detect potential data quality issues.
+    
+    Args:
+        df (pd.DataFrame): Input DataFrame to analyze
+        
+    Returns:
+        dict: Dictionary of potential issues found
+    """
+    
+    issues = {}
+    
+    # High missing values
+    missing_threshold = 50  # 50% threshold
+    high_missing_cols = []
+    for col in df.columns:
+        missing_pct = (df[col].isnull().sum() / len(df)) * 100
+        if missing_pct > missing_threshold:
+            high_missing_cols.append((col, missing_pct))
+    
+    if high_missing_cols:
+        issues['High_Missing_Values'] = high_missing_cols
+    
+    # Low variance columns (potential constant columns)
+    numeric_cols = df.select_dtypes(include=[np.number]).columns
+    low_variance_cols = []
+    for col in numeric_cols:
+        if df[col].var() < 0.01:  # Very low variance
+            low_variance_cols.append(col)
+    
+    if low_variance_cols:
+        issues['Low_Variance_Columns'] = low_variance_cols
+    
+    # High cardinality columns
+    high_cardinality_cols = []
+    for col in df.select_dtypes(include=['object']).columns:
+        unique_ratio = df[col].nunique() / len(df)
+        if unique_ratio > 0.9:  # More than 90% unique values
+            high_cardinality_cols.append((col, df[col].nunique()))
+    
+    if high_cardinality_cols:
+        issues['High_Cardinality_Columns'] = high_cardinality_cols
+    
+    # Duplicate rows
+    duplicate_count = df.duplicated().sum()
+    if duplicate_count > 0:
+        issues['Duplicate_Rows'] = duplicate_count
+    
+    return issues

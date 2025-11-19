@@ -15,9 +15,19 @@ This repository uses GitHub Actions to automatically build and publish the packa
    - **Value**: `your api key`
 6. Click **Add secret**
 
-### Step 2: Push Your Code
+### Step 2: Enable Workflow Permissions (CRITICAL)
 
-Once the secret is added, the workflow will automatically trigger on every push to `master` or `main` branch.
+**This step is REQUIRED** - without it, you'll get "Resource not accessible by integration" error.
+
+1. Go to: `https://github.com/Doombuoyz/doombuoy/settings/actions`
+2. Scroll down to **"Workflow permissions"**
+3. Select **"Read and write permissions"** (NOT "Read repository contents and packages permissions")
+4. Check ✅ **"Allow GitHub Actions to create and approve pull requests"**
+5. Click **"Save"**
+
+### Step 3: Push Your Code
+
+Once the secret is added and permissions are configured, the workflow will automatically trigger on every push to `master` or `main` branch.
 
 ## 📋 What the Pipeline Does
 
@@ -148,11 +158,22 @@ on:
 
 ## 📝 Troubleshooting
 
+### "Resource not accessible by integration" Error
+
+This error means GitHub Actions doesn't have permission to create releases or push commits:
+
+**Solution:**
+1. Go to `Settings → Actions → General`
+2. Under "Workflow permissions", select **"Read and write permissions"**
+3. Check **"Allow GitHub Actions to create and approve pull requests"**
+4. Save and re-run the workflow
+
 ### Pipeline Fails on First Run
 
 - Ensure `TEST_PYPI_API_TOKEN` secret is added correctly
 - Check that your Test PyPI token hasn't expired
 - Verify the token has upload permissions
+- Confirm workflow permissions are set to "Read and write"
 
 ### Version Conflicts
 

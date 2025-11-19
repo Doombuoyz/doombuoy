@@ -6,6 +6,10 @@ on:
       - master
       - main
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
@@ -67,19 +71,36 @@ jobs:
       env:
         POETRY_PYPI_TOKEN_TEST_PYPI: ${{ secrets.TEST_PYPI_API_TOKEN }}
     
+    - name: Get new version for tag
+      id: new_version
+      run: |
+        NEW_VERSION=$(poetry version -s)
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "New version: $NEW_VERSION"
+    
     - name: Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: v$(poetry version -s)
-        release_name: Release v$(poetry version -s)
+        tag_name: v${{ steps.new_version.outputs.version }}
+        name: Release v${{ steps.new_version.outputs.version }}
         body: |
-          Automated release of version $(poetry version -s)
+          ## 🚀 Version ${{ steps.new_version.outputs.version }}
           
-          Changes in this release:
+          Automated release created by GitHub Actions.
+          
+          ### 📦 Installation
+          ```bash
+          pip install --extra-index-url https://test.pypi.org/simple/ doombuoy==${{ steps.new_version.outputs.version }}
+          ```
+          
+          ### ✨ Changes
           - Version bumped automatically
-          - Published to Test PyPI
+          - Package built and published to [Test PyPI](https://test.pypi.org/project/doombuoy/${{ steps.new_version.outputs.version }}/)
+          
+          View the [changelog](https://github.com/Doombuoyz/doombuoy/blob/master/CHANGELOG.md) for details.
         draft: false
         prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       continue-on-error: true

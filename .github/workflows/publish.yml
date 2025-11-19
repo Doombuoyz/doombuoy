@@ -1,0 +1,85 @@
+name: Build and Publish to Test PyPI
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+    
+    - name: Configure Poetry for Test PyPI
+      run: |
+        poetry config repositories.test-pypi https://test.pypi.org/legacy/
+        poetry config pypi-token.test-pypi ${{ secrets.TEST_PYPI_API_TOKEN }}
+    
+    - name: Get current version
+      id: get_version
+      run: |
+        CURRENT_VERSION=$(poetry version -s)
+        echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+        echo "Current version: $CURRENT_VERSION"
+    
+    - name: Bump patch version
+      run: |
+        poetry version patch
+        NEW_VERSION=$(poetry version -s)
+        echo "New version: $NEW_VERSION"
+    
+    - name: Commit version bump
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add pyproject.toml
+        git commit -m "Bump version to $(poetry version -s) [skip ci]" || echo "No changes to commit"
+        git push || echo "No changes to push"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Install dependencies
+      run: poetry install --no-interaction
+    
+    - name: Build package
+      run: poetry build
+    
+    - name: Publish to Test PyPI
+      run: poetry publish -r test-pypi
+      env:
+        POETRY_PYPI_TOKEN_TEST_PYPI: ${{ secrets.TEST_PYPI_API_TOKEN }}
+    
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v$(poetry version -s)
+        release_name: Release v$(poetry version -s)
+        body: |
+          Automated release of version $(poetry version -s)
+          
+          Changes in this release:
+          - Version bumped automatically
+          - Published to Test PyPI
+        draft: false
+        prerelease: false
+      continue-on-error: true
